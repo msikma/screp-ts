@@ -14,6 +14,7 @@ export interface ScrepResult {
   resultData: ScrepData | null
   options: ScrepOptions
   exitCode: number | null
+  hasParsingErrors: boolean | null
   abortSignal: string | null
 }
 
@@ -61,11 +62,12 @@ function getCommandArguments(options: ScrepOptions): string[] {
 function wrapScrepResult(result: CommandResult, options: ScrepOptions): ScrepResult {
   const {stdout, exitCode, abortSignal} = result
   const abortSignalString = abortSignal ? String(abortSignal) : null
-  const resultData = parseScrepResult(stdout)
+  const [resultData, hasParsingErrors] = parseScrepResult(stdout)
   return {
     resultData,
     options,
     exitCode,
+    hasParsingErrors,
     abortSignal: abortSignalString,
   }
 }
