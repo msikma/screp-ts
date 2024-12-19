@@ -177,7 +177,7 @@ export interface ScrepComputed {
     Message: string
   }[]
   WinnerTeam: number
-  RepSaverPlayerID: number
+  RepSaverPlayerID: number | null
   PlayerDescs: {
     PlayerID: number
     LastCmdFrame: number
@@ -188,7 +188,7 @@ export interface ScrepComputed {
     StartLocation: {
       X: number
       Y: number
-    }
+    } | null
     StartDirection: number
   }[]
 }
