@@ -1,7 +1,8 @@
 // @dada78641/screp-ts <https://github.com/msikma/screp-ts>
 // © MIT license
 
-import {parseScrepResult, type ScrepData} from './parse.ts'
+import {parseScrepResult} from './parse.ts'
+import type {ScrepData} from '../types.ts'
 import {runCommand, assertFileExists, type CommandResult} from './exec.ts'
 import {validateOptions, resolveOptions, getOptionArg} from './options.ts'
 import type {ScrepOptions, ScrepOptionName, SpawnOptions} from './options.ts'
