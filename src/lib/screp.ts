@@ -85,7 +85,7 @@ function getFileOrBufferArgs(cmd: string, args: string[], file: string | Buffer)
   if (isBuffer) {
     return [[cmd, ...args], file]
   }
-  return [[cmd, ...args, file], undefined]
+  return [[cmd, ...args, file as string], undefined]
 }
 
 /**
@@ -101,7 +101,7 @@ export async function runScrep(file: string | Buffer, screpOptions: ScrepOptions
   const args = getCommandArguments(options, isBuffer)
   const cmd = spawnOptions.screpPath ?? 'screp'
   if (!isBuffer) {
-    await assertFileExists(file)
+    await assertFileExists(file as string)
   }
   
   const result = await runCommand(...getFileOrBufferArgs(cmd, args, file))
