@@ -41,7 +41,7 @@ function getArgumentValue(optionName: ScrepOptionName, optionValue: boolean | st
 /**
  * Returns an array of command line arguments we can pass to screp.
  */
-function getCommandArguments(options: ScrepOptions): string[] {
+function getCommandArguments(options: ScrepOptions, isBuffer: boolean): string[] {
   const args: string[] = []
   for (const [option, value] of Object.entries(options)) {
     const mappedArg = getOptionArg(option)
@@ -53,6 +53,9 @@ function getCommandArguments(options: ScrepOptions): string[] {
       continue
     }
     args.push(`${mappedArg}=${argValue}`)
+  }
+  if (isBuffer) {
+    args.push(`stdin`)
   }
   return args.map(arg => `-${arg}`)
 }
@@ -75,19 +78,33 @@ function wrapScrepResult(result: CommandResult, options: ScrepOptions): ScrepRes
 }
 
 /**
+ * Returns arguments to pass to runCommand(), either with a file path or buffer.
+ */
+function getFileOrBufferArgs(cmd: string, args: string[], file: string | Buffer): [string[], Buffer | undefined] {
+  const isBuffer = file instanceof Buffer
+  if (isBuffer) {
+    return [[cmd, ...args], file]
+  }
+  return [[cmd, ...args, file], undefined]
+}
+
+/**
  * Constructs a screp command, spawns a child process, and parses the result.
  * 
  * This is essentially equivalent to running screp on the command line; the output is parsed as JSON and typed.
  * 
  * Throws an error if the command could not be executed (for example, if screp is not installed).
  */
-export async function runScrep(file: string, screpOptions: ScrepOptions = {}, spawnOptions: SpawnOptions = {}): Promise<ScrepResult> {
+export async function runScrep(file: string | Buffer, screpOptions: ScrepOptions = {}, spawnOptions: SpawnOptions = {}): Promise<ScrepResult> {
+  const isBuffer = file instanceof Buffer
   const options = resolveOptions(validateOptions(screpOptions))
-  const args = getCommandArguments(options)
+  const args = getCommandArguments(options, isBuffer)
   const cmd = spawnOptions.screpPath ?? 'screp'
-  await assertFileExists(file)
+  if (!isBuffer) {
+    await assertFileExists(file)
+  }
   
-  const result = await runCommand([cmd, ...args, file])
+  const result = await runCommand(...getFileOrBufferArgs(cmd, args, file))
   return wrapScrepResult(result, options)
 }
 

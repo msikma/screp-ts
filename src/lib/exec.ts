@@ -34,20 +34,25 @@ export async function canRunScrep(screpPath: string = 'screp'): Promise<boolean>
  * If something goes wrong spawning the process, such as the command not being found,
  * or the correct rights to run the command not being present, an error is thrown.
  */
-export function runCommand(command: string[]): Promise<CommandResult> {
+export function runCommand(command: string[], inputData?: Buffer): Promise<CommandResult> {
   return new Promise((resolve, reject) => {
     if (command.length === 0) {
       return reject(new Error('No command was provided'))
     }
 
     const [cmd, ...args] = command
-    const child = spawn(cmd, args, {stdio: ['ignore', 'pipe', 'pipe']})
+    const child = spawn(cmd, args, {stdio: ['pipe', 'pipe', 'pipe']})
 
     const stdout: Buffer[] = []
     const stderr: Buffer[] = []
 
     child.stdout.on('data', data => stdout.push(data))
     child.stderr.on('data', data => stderr.push(data))
+
+    if (inputData) {
+      child.stdin.write(inputData)
+      child.stdin.end()
+    }
 
     child.on('close', (exitCode, abortSignal) => {
       if (abortSignal) {
