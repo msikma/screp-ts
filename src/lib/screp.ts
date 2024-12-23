@@ -15,7 +15,7 @@ export interface ScrepResult {
   options: ScrepOptions
   exitCode: number | null
   parseErrors: string | null
-  hasErrored: boolean
+  hasValidResult: boolean
   abortSignal: string | null
 }
 
@@ -69,7 +69,7 @@ function wrapScrepResult(result: CommandResult, options: ScrepOptions): ScrepRes
     options,
     exitCode,
     parseErrors,
-    hasErrored: resultData !== null && exitCode === 0,
+    hasValidResult: resultData != null && exitCode === 0,
     abortSignal: abortSignalString,
   }
 }
