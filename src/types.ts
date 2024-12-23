@@ -1,23 +1,19 @@
 // @dada78641/screp-ts <https://github.com/msikma/screp-ts>
 // © MIT license
 
-export type BwGameSpeedName = 'Slowest' | 'Slower' | 'Slow' | 'Normal' | 'Fast' | 'Faster' | 'Fastest'
-export type BwGameTypeName = 'None' | 'Custom' | 'Melee' | 'Free For All' | 'One on One' | 'Capture The Flag' | 'Greed' | 'Slaughter' | 'Sudden Death' | 'Ladder' | 'Use map settings' | 'Team Melee' | 'Team Free For All' | 'Team Capture The Flag' | 'Unknown' | 'Top vs Bottom' | 'Iron Man Ladder'
-export type BwGameTypeShortName = 'None' | 'Custom' | 'Melee' | 'FFA' | '1on1' | 'CTF' | 'Greed' | 'Slaughter' | 'Sudden Death' | 'Ladder' | 'UMS' | 'Team Melee' | 'Team FFA' | 'Team CTF' | 'Unk' | 'TvB' | 'Iron Man Ladder'
-export type BwPlayerTypeName = 'Inactive' | 'Computer' | 'Human' | 'Rescue Passive' | '(Unused)' | 'Computer Controlled' | 'Open' | 'Neutral' | 'Closed'
-export type BwRaceTypeName = 'Zerg' | 'Terran' | 'Protoss'
-export type BwRaceTypeShortName = 'zerg' | 'ran' | 'toss'
-export type BwRaceTypeLetter = 90 | 84 | 80
-export type BwColorName = 'Red' | 'Blue' | 'Teal' | 'Purple' | 'Orange' | 'Brown' | 'White' | 'Yellow' | 'Green' | 'Pale Yellow' | 'Tan' | 'Aqua' | 'Pale Green' | 'Blueish Grey' | 'Pale Yellow2' | 'Cyan' | 'Pink' | 'Olive' | 'Lime' | 'Navy' | 'Dark Aqua' | 'Magenta' | 'Grey' | 'Black'
-export type BwTileSetName = 'Badlands' | 'Space Platform' | 'Installation' | 'Ashworld' | 'Jungle' | 'Desert' | 'Arctic' | 'Twilight'
-export type BwLeaveGameReasonName = 'Quit' | 'Defeat' | 'Victory' | 'Finished' | 'Draw' | 'Dropped'
+// Complete returned data object.
+export interface ScrepData {
+  Header: ScrepHeader | null
+  Commands: ScrepCommands | null
+  MapData: ScrepMapData | null
+  Computed: ScrepComputed | null
+  Custom?: ScrepCustom
+  ShieldBattery?: ScrepShieldBattery
+}
 
+// The header containing core information about the replay.
 export interface ScrepHeader {
-  Engine: {
-    ID: number
-    Name: string
-    ShortName: string
-  }
+  Engine: BwEngineType,
   Version: string
   Frames: number
   StartTime: string
@@ -25,93 +21,26 @@ export interface ScrepHeader {
   MapWidth: number
   MapHeight: number
   AvailSlotsCount: number
-  Speed: {
-    ID: number
-    Name: BwGameSpeedName
-  }
-  Type: {
-    ID: number
-    Name: BwGameTypeName
-    ShortName: BwGameTypeShortName
-  }
+  Speed: BwGameSpeed,
+  Type: BwGameType,
   SubType: number
   Host: string
   Map: string
-  Players: {
-    ID: number
-    SlotID: number
-    Type: {
-      ID: number
-      Name: BwPlayerTypeName
-    }
-    Race: {
-      ID: number
-      Name: BwRaceTypeName
-      ShortName: BwRaceTypeShortName
-      Letter: BwRaceTypeLetter
-    }
-    Team: number
-    Name: string
-    Color: {
-      ID: number
-      Name: BwColorName
-      RGB: number
-    }
-    Observer: boolean
-  }[]
+  Players: BwPlayer[]
 }
 
+// The player commands section.
 export interface ScrepCommands {
-  Cmds: {
-    Frame: number
-    PlayerID: number
-    Type: {
-      ID: number
-      Name: string
-    }
-    UnitTags?: number[]
-    Pos?: {
-      X: number
-      Y: number
-    }
-    UnitTag?: number
-    Unit?: {
-      ID: number
-      Name: string
-    }
-    Queued?: boolean
-    IneffKind?: number
-    HotkeyType?: {
-      ID: number
-      Name: string
-    }
-    Group?: number
-    Order?: {
-      ID: number
-      Name: string
-    }
-    Upgrade?: {
-      ID: number
-      Name: string
-    }
-    SenderSlotID?: number
-    Message?: string
-    Reason?: {
-      ID: number
-      Name: string
-    }
-  }[],
+  Cmds: BwCommand[],
   ParseErrCmds: null
 }
 
+// All data related to the map.
 export interface ScrepMapData {
   Name: string
-  Version: number
+  Version: BwMapVersionNumber
   Description: string
-  TileSet: {
-    ID: number
-    Name: BwTileSetName
-  }
+  TileSet: BwTileSet
   PlayerOwners: {
     ID: number
     Name: string
@@ -121,93 +50,230 @@ export interface ScrepMapData {
     Name: string
   }[]
   Tiles: number[] | null
-  MineralFields: {
-    X: number
-    Y: number
-    Amount: number
-  }[] | null
-  Geysers: {
-    X: number
-    Y: number
-    Amount: number
-  }[] | null
-  StartLocations: {
-    X: number
-    Y: number
-    SlotID: number
-  }[]
+  MineralFields: BwResourceField[] | null
+  Geysers: BwResourceField[] | null
+  StartLocations: BwStartLocation[]
   MapGraphics: {
-    PlacedUnits: {
-      X: number
-      Y: number
-      UnitID: number
-      SlotID: number
-      ResourceAmount?: number
-      Sprite?: boolean
-    }[] | null
-    Sprites: {
-      X: number
-      Y: number
-      SpriteID: number
-    }[] | null
+    PlacedUnits: BwPlacedUnit[] | null
+    Sprites: BwSprite[] | null
   } | null
 }
 
+// Computed values added by screp.
 export interface ScrepComputed {
-  LeaveGameCmds: {
-    Frame: number
-    PlayerID: number
-    Type: {
-      ID: number
-      Name: string
-    }
-    Reason: {
-      ID: number
-      Name: BwLeaveGameReasonName
-    }
-  }[]
-  ChatCmds: {
-    Frame: number
-    PlayerID: number
-    Type: {
-      ID: number
-      Name: string
-    }
-    SenderSlotID: number
-    Message: string
-  }[]
+  LeaveGameCmds: BwGameLeaveCmd[]
+  ChatCmds: BwChatCmd[]
   WinnerTeam: number
   RepSaverPlayerID: number | null
-  PlayerDescs: {
-    PlayerID: number
-    LastCmdFrame: number
-    CmdCount: number
-    APM: number
-    EffectiveCmdCount: number
-    EAPM: number
-    StartLocation: {
-      X: number
-      Y: number
-    } | null
-    StartDirection: number
-  }[]
+  PlayerDescs: BwPlayerDesc[]
 }
 
+// The custom section, also generated by screp.
 export interface ScrepCustom {
   MapDataHash: string
 }
 
+// The Shield Battery data section for games played on its servers.
 export interface ScrepShieldBattery {
   StarCraftExeBuild: number
   ShieldBatteryVersion: string
   GameID: string
 }
 
-export interface ScrepData {
-  Header: ScrepHeader | null
-  Commands: ScrepCommands | null
-  MapData: ScrepMapData | null
-  Computed: ScrepComputed | null
-  Custom?: ScrepCustom
-  ShieldBattery?: ScrepShieldBattery
+// Everything below here is smaller types pulled out of the main interfaces.
+// These are all the things you'd want to handle as individual objects.
+
+// Header - Engine type
+export type BwEngineType = {
+  ID: number
+  Name: string
+  ShortName: string
 }
+
+// Header - Game speed
+export type BwGameSpeed = {
+  ID: number
+  Name: BwGameSpeedName
+}
+
+// Header - Game type
+export type BwGameType = {
+  ID: number
+  Name: BwGameTypeName
+  ShortName: BwGameTypeShortName
+}
+
+// Header, Player - Type
+export type BwPlayerType = {
+  ID: number
+  Name: BwPlayerTypeName
+}
+
+// Header, Player - Race
+export type BwPlayerRace = {
+  ID: number
+  Name: BwRaceTypeName
+  ShortName: BwRaceTypeShortName
+  Letter: BwRaceTypeLetter
+}
+
+// Header, Player - Color
+export type BwPlayerColor = {
+  ID: number
+  Name: BwColorName
+  RGB: number
+}
+
+// Header - Player object
+export type BwPlayer = {
+  ID: number
+  SlotID: number
+  Type: BwPlayerType
+  Race: BwPlayerRace
+  Team: number
+  Name: string
+  Color: BwPlayerColor
+  Observer: boolean
+}
+
+// Commands - Single command
+export type BwCommand = {
+  Frame: number
+  PlayerID: number
+  Type: {
+    ID: number
+    Name: string
+  }
+  UnitTags?: number[]
+  Pos?: {
+    X: number
+    Y: number
+  }
+  UnitTag?: number
+  Unit?: {
+    ID: number
+    Name: string
+  }
+  Queued?: boolean
+  IneffKind?: number
+  HotkeyType?: {
+    ID: number
+    Name: string
+  }
+  Group?: number
+  Order?: {
+    ID: number
+    Name: string
+  }
+  Upgrade?: {
+    ID: number
+    Name: string
+  }
+  SenderSlotID?: number
+  Message?: string
+  Reason?: {
+    ID: number
+    Name: string
+  }
+}
+
+// Map - Tileset
+export type BwTileSet = {
+  ID: number
+  Name: BwTileSetName
+}
+
+// Map - Resource field
+export type BwResourceField = {
+  X: number
+  Y: number
+  Amount: number
+}
+
+// Map - Start location
+export type BwStartLocation = {
+  X: number
+  Y: number
+  SlotID: number
+}
+
+// Map - Placed unit
+export type BwPlacedUnit = {
+  X: number
+  Y: number
+  UnitID: number
+  SlotID: number
+  ResourceAmount?: number
+  Sprite?: boolean
+}
+
+// Map - Sprite
+export type BwSprite = {
+  X: number
+  Y: number
+  SpriteID: number
+}
+
+// Computed - Game leave command
+export type BwGameLeaveCmd = {
+  Frame: number
+  PlayerID: number
+  Type: {
+    ID: number
+    Name: string
+  }
+  Reason: {
+    ID: number
+    Name: BwLeaveGameReasonName
+  }
+}
+
+// Computed - Chat command
+export type BwChatCmd = {
+  Frame: number
+  PlayerID: number
+  Type: {
+    ID: number
+    Name: string
+  }
+  SenderSlotID: number
+  Message: string
+}
+
+// Computer - Player description
+export type BwPlayerDesc = {
+  PlayerID: number
+  LastCmdFrame: number
+  CmdCount: number
+  APM: number
+  EffectiveCmdCount: number
+  EAPM: number
+  StartLocation: {
+    X: number
+    Y: number
+  } | null
+  StartDirection: number
+}
+
+// Game speed names.
+export type BwGameSpeedName = 'Slowest' | 'Slower' | 'Slow' | 'Normal' | 'Fast' | 'Faster' | 'Fastest'
+// Game type names.
+export type BwGameTypeName = 'None' | 'Custom' | 'Melee' | 'Free For All' | 'One on One' | 'Capture The Flag' | 'Greed' | 'Slaughter' | 'Sudden Death' | 'Ladder' | 'Use map settings' | 'Team Melee' | 'Team Free For All' | 'Team Capture The Flag' | 'Unknown' | 'Top vs Bottom' | 'Iron Man Ladder'
+// Shortened game type names.
+export type BwGameTypeShortName = 'None' | 'Custom' | 'Melee' | 'FFA' | '1on1' | 'CTF' | 'Greed' | 'Slaughter' | 'Sudden Death' | 'Ladder' | 'UMS' | 'Team Melee' | 'Team FFA' | 'Team CTF' | 'Unk' | 'TvB' | 'Iron Man Ladder'
+// Player types.
+export type BwPlayerTypeName = 'Inactive' | 'Computer' | 'Human' | 'Rescue Passive' | '(Unused)' | 'Computer Controlled' | 'Open' | 'Neutral' | 'Closed'
+// Race names. Note that whether someone was "random" is never stored in a replay file.
+export type BwRaceTypeName = 'Zerg' | 'Terran' | 'Protoss'
+// Shortened race names used by screp.
+export type BwRaceTypeShortName = 'zerg' | 'ran' | 'toss'
+// Race type letters (codepoints for capital letters Z, T and P).
+export type BwRaceTypeLetter = 90 | 84 | 80
+// Color names used by screp.
+export type BwColorName = 'Red' | 'Blue' | 'Teal' | 'Purple' | 'Orange' | 'Brown' | 'White' | 'Yellow' | 'Green' | 'Pale Yellow' | 'Tan' | 'Aqua' | 'Pale Green' | 'Blueish Grey' | 'Pale Yellow2' | 'Cyan' | 'Pink' | 'Olive' | 'Lime' | 'Navy' | 'Dark Aqua' | 'Magenta' | 'Grey' | 'Black'
+// Tileset names used by screp.
+export type BwTileSetName = 'Badlands' | 'Space Platform' | 'Installation' | 'Ashworld' | 'Jungle' | 'Desert' | 'Arctic' | 'Twilight'
+// Reasons for why a game was left.
+export type BwLeaveGameReasonName = 'Quit' | 'Defeat' | 'Victory' | 'Finished' | 'Draw' | 'Dropped'
+// Map version number. See <https://github.com/icza/screp/blob/main/rep/mapdata.go#L8>.
+export type BwMapVersionNumber = 0x2f | 0x3b | 0x3f | 0x40 | 0xcd | 0xce
