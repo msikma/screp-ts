@@ -63,11 +63,15 @@ export function validateOptions(options: ScrepOptions): ScrepOptions {
     includeMapResourceLocations,
     includeMapTiles
   } = options
+  // Check various options that depend on one another.
   if (includeMapDataHash === true && mapDataHashAlgorithm == null) {
     throw new Error('If includeMapDataHash is true, a mapDataHashAlgorithm must be set as well')
   }
   if (mapDataHashAlgorithm != null && includeMapDataHash !== true) {
     throw new Error('If a mapDataHashAlgorithm is set, includeMapDataHash must be set to true')
+  }
+  if (mapDataHashAlgorithm !== undefined && mapDataHashAlgorithm !== null && typeof mapDataHashAlgorithm !== 'string') {
+    throw new Error('Value mapDataHashAlgorithm must be undefined, null or a string')
   }
   if (includeMapData !== true) {
     if (includeMapGraphics === true) {
@@ -80,6 +84,22 @@ export function validateOptions(options: ScrepOptions): ScrepOptions {
       throw new Error('If a includeMapTiles is true, includeMapData must be set to true as well')
     }
   }
+  // Check that all optional boolean options aren't of a wrong type.
+  const booleans = ['includeCommands', 'includeComputedData', 'includeReplayHeader', 'includeMapData', 'includeMapDataHash', 'includeMapGraphics', 'includeMapResourceLocations', 'includeMapTiles']
+  for (const bool of booleans) {
+    const value = options[bool as ScrepOptionName]
+    if (value !== undefined && value !== true && value !== false) {
+      throw new Error(`Value ${bool} should be a boolean or undefined`)
+    }
+  }
+  // Check that no unknown options were passed.
+  const passedKeys = new Set(Object.keys(options))
+  const validKeys = new Set(optionArgs.keys())
+  const unknownKeys = passedKeys.difference(validKeys)
+  if (unknownKeys.size > 0) {
+    throw new Error(`Unknown options were passed: ${[...unknownKeys.keys()].join(', ')}`)
+  }
+
   return options
 }
 
@@ -112,6 +132,9 @@ export function resolveOptions(userOptions: ScrepOptions): ScrepOptions {
  * Returns whether a given options object is valid.
  */
 export function isValidOptions(options: ScrepOptions): boolean {
+  if (options === null || typeof options !== 'object') {
+    return false
+  }
   try {
     validateOptions(options)
     return true
