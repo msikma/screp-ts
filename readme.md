@@ -19,7 +19,7 @@ Get the source or a prebuilt binary at [icza/screp](https://github.com/icza/scre
 ```ts
 import {runScrep} from '@dada78641/screp-ts'
 
-const res = await runScrep('./replay_file.rep')
+const res = await runScrep('./replay_file.rep') // or a buffer of a replay file
 ```
 
 The parsed data will be in `res.resultData`. Since we run screp as an external command, the result also includes some metadata about the command execution itself.
