@@ -26,6 +26,8 @@ The parsed data will be in `res.resultData`. Since we run screp as an external c
 
 If the command was able to execute, it will always resolve with the result, even if the result is negative (such as an unparseable file). If the child process was terminated abnormally (e.g. terminated by the OS), the `runScrep()` command will throw an error.
 
+Parsing errors and warnings are returned as a string as the `res.parseErrors` value. If all went well, this will be an empty string.
+
 ### Options
 
 You can pass an options object as the second argument. This narrows the data down to specific parts. Parsing speed is unchanged, but the size of the response will vary.
