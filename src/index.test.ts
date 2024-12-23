@@ -3,6 +3,7 @@
 
 import {fileURLToPath} from 'node:url'
 import * as path from 'node:path'
+import * as fs from 'fs/promises'
 import {describe, it, expect} from 'vitest'
 import {runScrep, getScrepVersion, canRunScrep, isValidOptions} from './index.ts'
 
@@ -54,6 +55,19 @@ describe('screp-ts', () => {
         options: expect.any(Object),
         exitCode: 0,
         parseErrors: expect.stringContaining('skipping typeID'),
+        hasValidResult: true,
+        abortSignal: null,
+      }))
+    })
+  
+    it('should accept a buffer as argument', async () => {
+      const buffer = await fs.readFile(TEST_REP_LADDER)
+      const res = await runScrep(buffer, undefined, TEST_SPAWN_OPTIONS)
+      expect(res).toEqual(expect.objectContaining({
+        resultData: expect.any(Object),
+        options: expect.any(Object),
+        exitCode: expect.any(Number),
+        parseErrors: '',
         hasValidResult: true,
         abortSignal: null,
       }))
