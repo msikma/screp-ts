@@ -12,6 +12,8 @@ As prerequisite, the **screp** command line tool must be installed. If it's on t
 
 Get the source or a prebuilt binary at [icza/screp](https://github.com/icza/screp) to start using this library.
 
+### Parsing files
+
 **Once screp is installed,** you can add this library as dependency via `@dada78641/screp-ts`, and start parsing files like this:
 
 ```ts
@@ -46,11 +48,19 @@ You can pass an options object as the second argument. This narrows the data dow
 
 There's one separate option that's in its own object, specifically for setting the path to the screp binary. This is a separate object because it does not otherwise affect the command output.
 
+If you need to set this value, you can pass it as the third argument to `runScrep()`.
+
 | Option | Value | Equivalent | Description |
 |:-------|:-------|:-------|:-------|
 | screpPath | string† | – | Path to the screp binary. |
 
 †: the **screpPath** argument defaults to `"screp"`. If screp is on the `PATH` then you don't need to set this.
+
+### Utilities
+
+The `await getScrepVersion()` function returns an object describing the currently installed version of the command line tool.
+
+The `await canRunScrep()` function returns a boolean indicating whether the screp command is available.
 
 ### Types
 
