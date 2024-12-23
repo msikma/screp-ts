@@ -44,6 +44,16 @@ You can pass an options object as the second argument. This narrows the data dow
 
 †: type **MapDataHashAlgorithm**, or `'sha1' | 'sha256' | 'sha512' | 'md5'`. If **includeMapDataHash** is true, this must be set.
 
+### Spawn options
+
+There's one separate option that's in its own object, specifically for setting the path to the screp binary. This is a separate object because it does not otherwise affect the command output.
+
+| Option | Value | Equivalent | Description |
+|:-------|:-------|:-------|:-------|
+| screpPath | string† | – | Path to the screp binary. |
+
+†: the **screpPath** argument defaults to `"screp"`. If screp is on the `PATH` then you don't need to set this.
+
 ### Types
 
 This library includes type information for the parsed JSON output, among types for the library itself. The parsed JSON type can be imported as type `ScrepData`.
