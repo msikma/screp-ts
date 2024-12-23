@@ -63,7 +63,7 @@ See [src/lib/parse.ts](src/lib/parse.ts) for an overview.
 ## External links
 
 * [icza/screp](https://github.com/icza/screp), the original project
-* [screp-js](https://www.npmjs.com/package/screp-js), a pure JS compiled version of screp
+* [screp-js](https://www.npmjs.com/package/screp-js), a pure JS compiled version of screp (deprecated)
 
 ## License
 
