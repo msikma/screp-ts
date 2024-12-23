@@ -44,6 +44,8 @@ You can pass an options object as the second argument. This narrows the data dow
 
 †: type **MapDataHashAlgorithm**, or `'sha1' | 'sha256' | 'sha512' | 'md5'`. If **includeMapDataHash** is true, this must be set.
 
+By default, the same options are passed as you'd get by running screp without additional arguments: basically, all data except the commands and map data, and no map hash.
+
 ### Spawn options
 
 There's one separate option that's in its own object, specifically for setting the path to the screp binary. This is a separate object because it does not otherwise affect the command output.
