@@ -4,9 +4,7 @@
 
 Library that wraps the [icza/screp](https://github.com/icza/screp) command line tool for use in TypeScript and JavaScript.
 
-Unlike [screp-js](https://www.npmjs.com/package/screp-js), which is a pure JS version of the tool, this library depends on the `screp` command line tool being available on the system. **It must be installed separately.**
-
-I recommend using this library instead of screp-js, as running the native binary is *much* faster and this project includes types for the result data.
+This library depends on the `screp` command line tool being available on the system. **It must be installed separately.**
 
 ## Usage
 
