@@ -4,15 +4,12 @@
 import type {ScrepData} from '../types.ts'
 
 /**
- * Removes debugging lines from the screp stdout text.
+ * Removes error and debugging lines from the screp stdout text.
  * 
- * When an error occurs, screp prints the error to stdout instead of stderr.
- * Search for the first line starting with { and return everything from there.
+ * Errors can be printed both to stdout and stderr. This attempts to separate them both.
+ * Future versions of screp may well change this behavior.
  */
-function splitDebuggingLines(stdout: string): [string, string] {
-  if (stdout[0] === '{') {
-    return [stdout, '']
-  }
+function splitErrorLines(stdout: string, stderr: string): [string, string] {
   const lines = stdout.split('\n')
 
   // The first valid line is the line opening the JSON object.
@@ -21,8 +18,8 @@ function splitDebuggingLines(stdout: string): [string, string] {
   return [
     // The JSON content.
     lines.slice(firstLine).join('\n'),
-    // Debug lines (e.g. parsing errors).
-    lines.slice(0, firstLine).join('\n'),
+    // Debug lines (e.g. parsing errors), plus anything printed to stderr.
+    [lines.slice(0, firstLine).join('\n'), stderr].join('\n'),
   ]
 }
 
@@ -47,14 +44,14 @@ function parseOutput(stdout: string): ScrepData | null {
 /**
  * Attempts to parse the result of the screp command, and returns it as a ScrepData object if successful.
  */
-export function parseScrepResult(stdout: string): [ScrepData | null, string | null] {
+export function parseScrepResult(stdout: string, stderr: string): [ScrepData | null, string | null] {
   if (stdout == null || stdout.trim() === '') {
     return [null, null]
   }
   try {
-    const [main, debug] = splitDebuggingLines(stdout)
+    const [main, error] = splitErrorLines(stdout, stderr)
     const obj = parseOutput(main)
-    return [obj, debug.trim()]
+    return [obj, error.trim()]
   }
   catch {
     return [null, null]

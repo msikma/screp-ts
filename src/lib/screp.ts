@@ -64,9 +64,9 @@ function getCommandArguments(options: ScrepOptions, isBuffer: boolean): string[]
  * Parses the result of running the screp command and returns it as a result object.
  */
 function wrapScrepResult(result: CommandResult, options: ScrepOptions): ScrepResult {
-  const {stdout, exitCode, abortSignal} = result
+  const {stdout, stderr, exitCode, abortSignal} = result
   const abortSignalString = abortSignal ? String(abortSignal) : null
-  const [resultData, parseErrors] = parseScrepResult(stdout)
+  const [resultData, parseErrors] = parseScrepResult(stdout, stderr)
   return {
     resultData,
     options,

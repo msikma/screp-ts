@@ -3,7 +3,7 @@
 
 import {spawn} from 'child_process'
 import commandExists from 'command-exists'
-import {promises as fs, constants} from 'fs'
+import * as fs from 'node:fs/promises'
 
 export interface CommandResult {
   stdout: string
@@ -79,5 +79,5 @@ export function runCommand(command: string[], inputData?: Buffer): Promise<Comma
  * We do it this way because it's more clear to the end user to actually throw an error.
  */
 export async function assertFileExists(filePath: string): Promise<void> {
-  await fs.access(filePath, constants.F_OK)
+  await fs.access(filePath, fs.constants.F_OK)
 }
