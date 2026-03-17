@@ -37,7 +37,6 @@
   "license": "MIT",
   "devDependencies": {
     "@dada78641/eslint-config": "^1.0.1",
-    "@stylistic/eslint-plugin": "^2.9.0",
     "@types/command-exists": "^1.2.3",
     "@types/node": "^24.3.0",
     "eslint": "^9.34.0",
